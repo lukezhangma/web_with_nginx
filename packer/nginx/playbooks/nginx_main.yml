@@ -1,0 +1,12 @@
+---
+# This Playbook deploys nginx!
+
+- hosts: all
+  vars_files:
+    - vars/main.yml
+  user: $global_user
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - include_tasks: tasks/nginx.yml

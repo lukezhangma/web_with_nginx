@@ -1,0 +1,77 @@
+{
+  "builders": [{
+    "ami_name": "nginx-{{isotime | clean_resource_name}}",
+    "ami_description": "An Ubuntu AMI that with Ruby on Rails installed. Only for Security Gauge",
+    "instance_type": "t3.micro",
+    "region": "us-east-1",
+    "type": "amazon-ebs",
+    "tags": {
+        "OS_Version": "Amazon Linux 2",
+        "Base_AMI_Name": "Latest from AWS",
+        "Extra": "Nginx"
+      },
+      "ami_regions": ["us-east-1"],
+      "encrypt_boot": true,
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "amzn-ami-hvm*x86_64-gp2",
+          "root-device-type": "ebs"
+        },
+        "owners": ["amazon"],
+        "most_recent": true
+      },
+    "ssh_username": "ec2-user",
+    "subnet_id": "subnet-60b02141",
+    "security_group_ids": ["sg-061fdabc3ef3df635"],
+    "associate_public_ip_address": true,
+    "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/xvda",
+          "volume_size": 8,
+          "volume_type": "gp2",
+          "encrypted": true,
+          "delete_on_termination": true
+        }
+      ],
+      "ami_block_device_mappings": [ 
+        {  
+          "device_name": "/dev/sdb",
+          "volume_size": 10,
+          "volume_type": "gp2",
+          "encrypted": true,
+          "delete_on_termination": true
+        }
+     ]
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "echo 'Sleeping for 30 seconds to give Ubuntu enough time to initialize (otherwise, packages may fail to install).'",
+      "sleep 30"
+    ]
+  },
+  {
+    "type": "shell",
+    "inline": [
+      "sudo yum install -y xfsprogs"
+    ]
+  },
+  {
+    "type": "ansible",
+    "playbook_file": "./playbooks/playbook.yml"
+  },
+  {
+    "type": "ansible",
+    "playbook_file": "./playbooks/nginx_main.yml"
+  }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "manifest.json",
+      "strip_path": true
+    }
+  ]
+
+}

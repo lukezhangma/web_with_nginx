@@ -1,0 +1,17 @@
+
+- name: Install EPEL release for nginx
+  yum: name=epel-release state=present
+
+- name: Install nginx web server
+  yum: name=nginx state=installed update_cache=true
+
+
+- name: create certificate directory
+  file: path=/etc/nginx/ssl state=directory mode=0755
+
+
+- name: Upload the my own index.html file
+  template: src=index.html dest=/usr/share/nginx/html/ mode=0644 
+
+- name: short line lengths make easier to catch mistakes
+  service: name=nginx enabled=yes state=started

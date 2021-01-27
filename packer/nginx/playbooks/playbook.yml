@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: Yes
+  gather_facts: False
+  vars:
+    http_port: 80
+    max_clients: 200
+  remote_user: root
+
+  tasks:
+    - name: install python2
+      raw: test -e /usr/bin/python || (sudo apt-get -y update && sudo apt-get install -y python-minimal)
+    - name: Make sure we have a 'wheel' group
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+         dest: /etc/sudoers
+         state: present
+         regexp: '^%wheel'
+         line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+         validate: 'visudo -cf %s'
+
+    - name: Add sudoers users to wheel group
+      user: 
+         name: deploy
+         password: "{{ 'password' | password_hash('sha512') }}"
+         groups: wheel
+         shell: /bin/bash
+         home: /srv/apps

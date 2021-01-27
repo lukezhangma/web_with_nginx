@@ -1,0 +1,8 @@
+app_name: sessionm
+webserver_name: qa.sessionm.com
+deploy_directory: /srv/apps/{{app_name}}
+deploy_root: /srv/apps
+
+global_user: root 
+global_use_sudo: True
+global_sudo_user: deploy
