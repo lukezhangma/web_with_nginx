@@ -4,26 +4,26 @@
 This project contains two directories, such as:
 `packer`,`terraform`
 
-`packer` contains Packer scripts to build a customized Amazon Linux image with NGINX installed.
++ `packer` contains Packer scripts to build a customized Amazon Linux image with NGINX installed.
  Here are some hilights on bulding customized images:
-    - I attached two EBS volume to the images, they are all encrypted volumes to ensure the data is encrypted at rest:
+ + I attached two EBS volume to the images, they are all encrypted volumes to ensure the data is encrypted at rest:
         ```sh
            1) EBS based root volume where OS is intalled, encrypted.
            2) EBS based secondary volume , expandable, encryted. Later on when an instance is initiated for this image, I used 'userdata.sh' to mount /var/log to this volume. It can be expanded without stopping the instance.
          ```
-    - I used `shell` provisioner and `ansible` provisioner to install nginx and to provison os.
+  + I used `shell` provisioner and `ansible` provisioner to install nginx and to provison os.
 
-`terraform` contains several modules of Terraform scripts.
-`autoscaling` contain `terraform` scripts to create an autoscaling group, it uses launch configuration to launch NGINX web server from pre-built image, and use userdata.sh to further provision the instances.
++ `terraform` contains several modules of Terraform scripts.
++ `autoscaling` contain `terraform` scripts to create an autoscaling group, it uses launch configuration to launch NGINX web server from pre-built image, and use userdata.sh to further provision the instances.
 It also creates autoscaling policy to control how to scaling up the group based on CPU usage and triger the alarms.
-`loadbalancer` contain `terraform` scripts to create an application load balancer , it forward internet traffic on port 80 to target group of NGINX web server instances. It uses port 80 for health check.
-`bastion` contains scripts to create a bastion host in public subnet. User will first `ssh` to this host then access to other server instances in private subnets. Amazon bastion image costs money to use, for demo purpose I use the same image as nginx web server for bastion. In real situation we would build our own bastion image.
-`security_group` contains the scripts to create three security groups. 
++ `loadbalancer` contain `terraform` scripts to create an application load balancer , it forward internet traffic on port 80 to target group of NGINX web server instances. It uses port 80 for health check.
++ `bastion` contains scripts to create a bastion host in public subnet. User will first `ssh` to this host then access to other server instances in private subnets. Amazon bastion image costs money to use, for demo purpose I use the same image as nginx web server for bastion. In real situation we would build our own bastion image.
++ `security_group` contains the scripts to create three security groups. 
 - One for load balancer to allow traffic on port 80. We could add port 443 for HTTPS traffic, but it requires certificate for that, so I just leave it for future expansion. For demo, only port 80 is open.
 - Second security group is for NGINX web servers, it allow traffic from load balancer on port 80. It also permit traffic from bastion host to it on port 22.
 - The third security groups is for bastion host, it allows traffic to it on port 22 from internet. 
 
-`vpc` contains scripts that provision VPC and subnets, it creates a vpc with two public subnets and one private subnet. And it creates internet gateway and route table for communication to the internet.
++ `vpc` contains scripts that provision VPC and subnets, it creates a vpc with two public subnets and one private subnet. And it creates internet gateway and route table for communication to the internet.
 `alarm` contains the scripts that create CloudWatch alarms on CPU usage of web servers.
 
 
