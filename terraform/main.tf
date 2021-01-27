@@ -86,11 +86,11 @@ module "loadbalancer" {
 }
 
 
-terraform {
-  backend "s3" {
+#terraform {
+#  backend "s3" {
     # Be sure to change this bucket name and region to match an S3 Bucket you have already created!
-    bucket = "luke-zhang-management"
-    region = "us-east-1"
-    key    = "modules/terraform.tfstate"
-  }
-}
+#    bucket = "luke-zhang-management"
+#    region = "us-east-1"
+#    key    = "modules/terraform.tfstate"
+#  }
+#}

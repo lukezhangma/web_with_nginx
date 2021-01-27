@@ -40,12 +40,13 @@ First step, go to `packer/nginx` directory, run follwing command to build custom
 ```sh
 1. packer build nginx_image.json
 ```
+
 Second step. Then you should get ami id from screen output or log in Amazon console EC2 management console to find out AMI id. Then you would edit terraform.tfvar and use this id as input parameter for terraform scripts.
 Edit `terraform.tfvar` in `terraform` directory,  add this line:
 ```sh
 nginx_ami_id = "<ami-id>"
 ```
-*Before running `terraform` scripts, we need create a management S3 bucket as terraform backend. I give a example terraform script for creating S3 bucket. It is `s3.tf`. I run it seperatedly because this bucket lifecycle spans across the creating and destroying the NGINX cluster. So the backend bucket of 'luke-zhang-management' should be created before running terraform scripts. You could delete backend section to run without s3 backend.*
+*In order to make the scripts easy to run, I commneted S3 backend out. In real life condition, you should create a S3 bucket as backend to store terraform state file for better security. And uncomment s3 backend in main.tf.*
 
 Assuming you have proper AWS credential configure in .aws directory and if using MFA. you have temporary token obtained. Go to `terraform` directory, run these commands:
 ```sh
