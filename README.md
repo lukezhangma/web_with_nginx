@@ -3,7 +3,7 @@
 
 This project contains two directories, such as:
 `packer`,`terraform` 
-+ These scripts don't contain Aamzon account dependency. Assuming you have proper AWS credential configure in `.aws` directory and if using MFA. you have temporary token obtained. You can run these scripts against any Amazon accounts.
++ These scripts don't contain Amazon account dependency. Assuming you have proper AWS credential configure in `.aws` directory and if using MFA. you have temporary token obtained. You can run these scripts against any Amazon accounts.
 
 + I assume that you have Pakcer, Terraform, Ansible properly installed. 
 
@@ -34,7 +34,7 @@ It also creates autoscaling policy to control how to scaling up the group based 
 Usage:
 -------------
 
-I assume that you have Pakcer, Terraform, Ansible properly installed. If you need to install them, please follow these links to install them. [Pakcer](https://learn.hashicorp.com/tutorials/packer/getting-started-install), [Terraform installtion](https://learn.hashicorp.com/tutorials/terraform/install-cli), [Ansible installtion](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+I assume that you have Pakcer, Terraform, Ansible properly installed. If you need to install them, please follow these links to install them. [Pakcer installation](https://learn.hashicorp.com/tutorials/packer/getting-started-install), [Terraform installtion](https://learn.hashicorp.com/tutorials/terraform/install-cli), [Ansible installtion](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 
 First step, go to `packer/nginx` directory, run follwing command to build customize AMI:
 ```sh
@@ -43,8 +43,9 @@ First step, go to `packer/nginx` directory, run follwing command to build custom
 Second step. Then you should get ami id from screen output or log in Amazon console EC2 management console to find out AMI id. Then you would edit terraform.tfvar and use this id as input parameter for terraform scripts.
 Edit `terraform.tfvar` in `terraform` directory,  add this line:
 ```sh
-nginx_ami_id = "ami-07babf81a5a041f1a"
+nginx_ami_id = "<ami-id>"
 ```
+*Before running `terraform` scripts, we need create a management S3 bucket as terraform backend. I give a example terraform script for creating S3 bucket. It is `s3.tf`. I run it seperatedly because this bucket lifecycle spans across the creating and destroying the NGINX cluster. So the backend bucket of 'luke-zhang-management' should be created before running terraform scripts. You could delete backend section to run without s3 backend.*
 
 Assuming you have proper AWS credential configure in .aws directory and if using MFA. you have temporary token obtained. Go to `terraform` directory, run these commands:
 ```sh
@@ -55,7 +56,18 @@ Assuming you have proper AWS credential configure in .aws directory and if using
 Explanation of Some Details
 ---------------------------
 
-* When the customized NGINX AMI image is created, I created a user `deploy` that is used for management of instance purpose.
+* When EBS volumes are provisioned, they are all encrypted for ensuring encryted data at rest. Which is done by Ansible provisioner.
+
+* When the customized NGINX AMI image is created, I created a user `deploy` that is used for management of instance purpose. It is created with playbook  `playbook.yml` by ansible provisioner. Here is example code:
+```ini
+    - name: Add sudoers users to wheel group
+      user: 
+         name: deploy
+         password: "{{ 'password' | password_hash('sha512') }}"
+         groups: wheel
+         shell: /bin/bash
+         home: /srv/apps
+```
 
 * Following ausoscling policy should allow autoscaler add more server instances when load is high.
 ```ini
@@ -74,4 +86,7 @@ resource "aws_autoscaling_policy" "web_cluster_target_tracking_policy" {
   }
 }
 ```
-* The second volume attached to the web servers are EBS volumes that can be expaned in real time. So the usage of volume by logs grow bigger, we could expend the storage without stopping the instance.
+
+* CloudWatch alarms are used for alerting the server load and autoscaling issues. Located in `terraform/alarm` directory.
+
+* The secondary volume attached to the web server instances are EBS volumes that can be expaned in realtime. So the usage of volume by logs grow bigger, we could expend the storage without stopping the instance.
