@@ -12,13 +12,11 @@ resource "aws_lb_listener" "alb-listener" {
 data "aws_availability_zones" "available" {}
 
 resource "aws_lb" "autoscaling_elb" {
-    name = "autoscaling-elb"
-
-    security_groups = var.security_groups
-    subnets = var.subnets
+    name               = "autoscaling-elb"
+    security_groups    = var.security_groups
+    subnets            = var.subnets
     load_balancer_type = "application"
-
-    idle_timeout = 400
+    idle_timeout       = 400
 
     tags = {
          Name = "autoscaling-elb"
@@ -46,7 +44,7 @@ resource "aws_lb_target_group" "autoscaling-targetgroup" {
 
 
 output "autoscaling_elb_dns_name" {
-    value = aws_lb.autoscaling_elb.dns_name
+  value = aws_lb.autoscaling_elb.dns_name
 }
 
 output "autoscaling_targetgroup_arns" {

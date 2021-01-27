@@ -1,0 +1,2 @@
+To run:
+--terraform apply

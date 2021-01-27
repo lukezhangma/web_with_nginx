@@ -50,10 +50,10 @@ resource "aws_autoscaling_policy" "web_cluster_target_tracking_policy" {
 }
 
 resource "aws_autoscaling_policy" "autoscaling_policy" {
-   name = "terraform-autoplicy"
-   scaling_adjustment = 1
-   adjustment_type = "ChangeInCapacity"
-   cooldown = 300
+   name                   = "terraform-autoplicy"
+   scaling_adjustment     = 1
+   adjustment_type        = "ChangeInCapacity"
+   cooldown               = 300
    autoscaling_group_name = aws_autoscaling_group.sessionm_asg.name
 }
 
@@ -67,4 +67,3 @@ output "nginx_autoscaling_group_name" {
 output "nginx_autoscaling_policy_arn" {
   value = aws_autoscaling_policy.autoscaling_policy.arn
  }
- 
