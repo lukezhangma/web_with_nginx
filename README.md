@@ -2,7 +2,10 @@
 ==========================================================================
 
 This project contains two directories, such as:
-`packer`,`terraform`
+`packer`,`terraform` 
++ These scripts don't contain Aamzon account dependency. Assuming you have proper AWS credential configure in `.aws` directory and if using MFA. you have temporary token obtained. You can run these scripts against any Amazon accounts.
+
++ I assume that you have Pakcer, Terraform, Ansible properly installed. 
 
 + `packer` contains Packer scripts to build a customized Amazon Linux image with NGINX installed.
  Here are some hilights on bulding customized images:
@@ -31,7 +34,7 @@ It also creates autoscaling policy to control how to scaling up the group based 
 Usage:
 -------------
 
-I assume that you have Pakcer, Terraform, Ansible properly installed. If you need to install them, please follow these links to install them.
+I assume that you have Pakcer, Terraform, Ansible properly installed. If you need to install them, please follow these links to install them. [Pakcer](https://learn.hashicorp.com/tutorials/packer/getting-started-install), [Terraform installtion](https://learn.hashicorp.com/tutorials/terraform/install-cli), [Ansible installtion](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 
 First step, go to `packer/nginx` directory, run follwing command to build customize AMI:
 ```sh
