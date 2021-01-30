@@ -54,6 +54,14 @@ Assuming you have proper AWS credential configure in .aws directory and if using
 2. terraform apply
 ```
 
+* Bastion instance is placed in the public subnet of VPC. If you want to log in nginx server in private subnet of VPC, you would take the public ip of bastion, use following command to ssh to it:
+```sh
+1. ssh -i ~/.ssh/private_key.pem uc2-user@<public address>
+```
+
+From bastion, you could upload private key, and use it to further ssh to nginx server instances by private ips.
+
+
 Explanation of Some Details
 ---------------------------
 
